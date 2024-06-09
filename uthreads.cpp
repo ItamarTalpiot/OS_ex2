@@ -42,12 +42,12 @@ int uthread_terminate(int tid)
 
 void print_library_error_message(std::string str)
 {
-    std::cerr << "thread library error" << str << std::endl;
+    std::cerr << "thread library error: " << str << std::endl;
 }
 
 void print_system_error_message(std::string str)
 {
-    std::cerr << "system error" << str << std::endl;
+    std::cerr << "system error: " << str << std::endl;
 }
 
 /**
