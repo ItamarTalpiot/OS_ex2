@@ -32,7 +32,10 @@ int uthread_init(int quantum_usecs)
  */
 int get_next_id(){
   int id = 1;
-  while(ThreadHandler::)
+  while(ThreadHandler::get_threads().find(id) != ThreadHandler::get_threads().end()){
+    id++;
+  }
+  return id;
 }
 
 /**
@@ -48,5 +51,9 @@ int get_next_id(){
  * @return On success, return the ID of the created thread. On failure, return -1.
 */
 int uthread_spawn(thread_entry_point entry_point){
+  if(ThreadHandler::get_number_of_threads() >= MAX_THREAD_NUM){
+
+  }
+  int id = get_next_id();
 
 }
