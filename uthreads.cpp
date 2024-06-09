@@ -26,6 +26,30 @@ int uthread_init(int quantum_usecs)
     return 0;
 }
 
+/**
+ * @brief Terminates the thread with ID tid and deletes it from all relevant control structures.
+ *
+ * All the resources allocated by the library for this thread should be released. If no thread with ID tid exists it
+ * is considered an error. Terminating the main thread (tid == 0) will result in the termination of the entire
+ * process using exit(0) (after releasing the assigned library memory).
+ *
+ * @return The function returns 0 if the thread was successfully terminated and -1 otherwise. If a thread terminates
+ * itself or the main thread is terminated, the function does not return.
+*/
+int uthread_terminate(int tid)
+{
+
+}
+
+void print_library_error_message(std::string str)
+{
+    std::cerr << "thread library error" << str << std::endl;
+}
+
+void print_system_error_message(std::string str)
+{
+    std::cerr << "system error" << str << std::endl;
+}
 
 /**
  * this function return the next id to use.
