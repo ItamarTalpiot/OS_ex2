@@ -76,18 +76,18 @@ void jump_to_thread(int tid)
  */
 void yield(void)
 {
-    int ret_val = sigsetjmp(env[current_thread], 1);
-    printf("yield: ret_val=%d\n", ret_val);
-    bool did_just_save_bookmark = ret_val == 0;
+  int ret_val = sigsetjmp(env[current_thread], 1);
+  printf ("yield: ret_val=%d\n", ret_val);
+  bool did_just_save_bookmark = ret_val == 0;
 //    bool did_jump_from_another_thread = ret_val != 0;
-    if (did_just_save_bookmark)
+  if (did_just_save_bookmark)
     {
-        jump_to_thread(1 - current_thread);
+      jump_to_thread (1 - current_thread);
     }
 }
 
 
-void thread0(void)
+void thread0(void)z
 {
     int i = 0;
     while (1)
