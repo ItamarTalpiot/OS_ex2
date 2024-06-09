@@ -7,7 +7,7 @@
 
 ThreadHandler::ThreadHandler()
 {
-  _threads[0] = Thread(0, nullptr);
+  _threads.insert({0, Thread(0, nullptr)});
 }
 
 Thread& ThreadHandler::get_thread (int id)
@@ -16,12 +16,20 @@ Thread& ThreadHandler::get_thread (int id)
   return _threads.at (id);
 }
 
-int ThreadHandler::pop_thread()
+Thread& ThreadHandler::pop_thread()
 {
-  return 0;
+  int thread_id = _ready_states.front();
+  _ready_states.pop();
+  return _threads.at(thread_id);
 }
 
-int main() {
-  std::cout << "here" << std::endl;
-  return 0;
+void ThreadHandler::add_thread (int id, thread_entry_point _entry_point)
+{
+  _threads.insert({id, Thread(id,_entry_point)});
+  _ready_states.push (id);
+}
+
+int ThreadHandler::get_number_of_threads ()
+{
+  return _threads.size();
 }

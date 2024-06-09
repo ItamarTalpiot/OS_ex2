@@ -10,14 +10,15 @@
 class ThreadHandler{
  private:
   static std::map<int, Thread> _threads;
-  static std::queue<int> ready_states;
+  static std::queue<int> _ready_states;
   static Thread _current_thread;
 
  public:
   ThreadHandler();
   static Thread& get_thread(int id);
-  static int pop_thread();
-  static int add_thread(int id);
+  static Thread& pop_thread();
+  static int get_number_of_threads();
+  static void add_thread(int id, thread_entry_point _entry_point);
 };
 #endif //_THREADHANDLER_H_
 
