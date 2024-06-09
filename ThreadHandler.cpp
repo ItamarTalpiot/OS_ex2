@@ -43,3 +43,20 @@ void ThreadHandler::set_quantum_time (int quantum_time)
 void ThreadHandler::delete_thread(int id) {
     _threads.erase(id);
 }
+
+const std::map<int, Thread> &ThreadHandler::get_threads ()
+{
+  return _threads;
+}
+const std::queue<int> &ThreadHandler::get_ready_states ()
+{
+  return _ready_states;
+}
+const Thread &ThreadHandler::get_current_thread ()
+{
+  return _current_thread;
+}
+int ThreadHandler::get_quantum_time ()
+{
+  return _quantum_time;
+}

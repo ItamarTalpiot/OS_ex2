@@ -49,3 +49,28 @@ void print_system_error_message(std::string str)
 {
     std::cerr << "system error" << str << std::endl;
 }
+
+/**
+ * this function return the next id to use.
+ * @return
+ */
+int get_next_id(){
+  int id = 1;
+  while(ThreadHandler::)
+}
+
+/**
+ * @brief Creates a new thread, whose entry point is the function entry_point with the signature
+ * void entry_point(void).
+ *
+ * The thread is added to the end of the READY threads list.
+ * The uthread_spawn function should fail if it would cause the number of concurrent threads to exceed the
+ * limit (MAX_THREAD_NUM).
+ * Each thread should be allocated with a stack of size STACK_SIZE bytes.
+ * It is an error to call this function with a null entry_point.
+ *
+ * @return On success, return the ID of the created thread. On failure, return -1.
+*/
+int uthread_spawn(thread_entry_point entry_point){
+
+}
