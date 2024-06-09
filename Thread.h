@@ -66,6 +66,7 @@ class Thread {
 public:
     Thread(int id, thread_entry_point entry_point);
 
+    void set_status(STATE s);
     sigjmp_buf& get_buf_ref();
     void free_thread();
 };

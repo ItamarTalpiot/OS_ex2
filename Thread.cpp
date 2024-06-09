@@ -20,3 +20,8 @@ void Thread::free_thread()
 {
     free(stack);
 }
+
+void Thread::set_status(STATE s)
+{
+    _state = s;
+}

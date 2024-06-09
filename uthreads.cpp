@@ -15,6 +15,12 @@
 */
 int uthread_init(int quantum_usecs)
 {
+    if (quantum_usecs <= 0)
+        return -1;
+
     ThreadHandler::add_thread(0, nullptr);
+    ThreadHandler::get_thread(0).set_status(RUNNING);
     ThreadHandler::set_quantum_time(quantum_usecs);
+
+    return 0;
 }
