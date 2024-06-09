@@ -54,13 +54,13 @@ address_t translate_address(address_t addr)
 
 
 
-STATES = enum STATE {READY, BLOCKED, RUNNING};
+enum STATE {READY, BLOCKED, RUNNING};
 
 class Thread {
     STATE _state;
     int _id;
     thread_entry_point _entry_point;
-    char stack[];
+    char* stack;
     sigjmp_buf _env;
 
 public:
