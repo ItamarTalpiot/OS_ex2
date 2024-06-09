@@ -77,10 +77,10 @@ int get_next_id(){
 */
 int uthread_spawn(thread_entry_point entry_point){
   if(ThreadHandler::get_number_of_threads() >= MAX_THREAD_NUM){
-    std::cerr << "thread library error: max threads reached!" << std::endl;
+    print_library_error_message ("max number of thread reached!");
     return -1;
   }
   int id = get_next_id();
-
-
+  ThreadHandler::add_thread (id, entry_point);
+  return id;
 }
