@@ -5,8 +5,10 @@ Thread::Thread(int id, thread_entry_point entry_point)
     _id = id;
     _state = READY;
     _entry_point = entry_point;
-    stack = new char[STACK_SIZE]
-
+    if (id != 0)
+        stack = new char[STACK_SIZE];
+    else
+        stack = nullptr;
 }
 
 sigjmp_buf& Thread::get_buf_ref()

@@ -1,5 +1,5 @@
 #include "uthreads.h"
-
+#include "ThreadHandler.h"
 
 /**
  * @brief initializes the thread library.
@@ -15,5 +15,6 @@
 */
 int uthread_init(int quantum_usecs)
 {
-    ThreadHandler.add_thread()
+    ThreadHandler::add_thread(0, nullptr);
+    ThreadHandler::set_quantum_time(quantum_usecs);
 }
