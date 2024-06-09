@@ -21,6 +21,7 @@ class ThreadHandler{
   static int get_number_of_threads();
   static void add_thread(int id, thread_entry_point _entry_point);
   static void set_quantum_time(int quantum_time);
+  static void delete_thread(int id);
 };
 
 #endif //_THREADHANDLER_H_
