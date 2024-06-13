@@ -54,7 +54,7 @@ address_t translate_address(address_t addr)
 
 
 
-enum STATE {READY, BLOCKED, RUNNING};
+enum STATE {READY, BLOCKED, RUNNING, TERMINATED};
 
 class Thread {
     STATE _state;
@@ -66,8 +66,10 @@ class Thread {
 public:
     Thread(int id, thread_entry_point entry_point);
 
+    STATE get_status();
     void set_status(STATE s);
     sigjmp_buf& get_buf_ref();
+    thread_entry_point get_entry_point();
     void free_thread();
 };
 

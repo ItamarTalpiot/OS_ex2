@@ -87,7 +87,7 @@ void yield(void)
 }
 
 
-void thread0(void)z
+void thread0(void)
 {
     int i = 0;
     while (1)

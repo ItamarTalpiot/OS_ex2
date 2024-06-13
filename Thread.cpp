@@ -36,3 +36,11 @@ void Thread::set_status(STATE s)
 {
     _state = s;
 }
+
+STATE Thread::get_status() {
+    return _state;
+}
+
+thread_entry_point Thread::get_entry_point() {
+    return _entry_point;
+}

@@ -13,12 +13,15 @@ class ThreadHandler{
   static std::queue<int> _ready_states;
   static int _current_thread_id;
   static int _quantum_time;
+  static int _quantum_count;
 
- public:
+
+public:
+    static struct itimerval timer;
   ThreadHandler();
   static const std::map<int, Thread> &get_threads ();
   static const std::queue<int> &get_ready_states ();
-  static const Thread& get_current_thread();
+  static Thread& get_current_thread();
   static  int get_current_thread_id();
   static int get_quantum_time ();
   static Thread& get_thread(int id);
@@ -29,6 +32,9 @@ class ThreadHandler{
   static void delete_thread(int id);
   static void free_all_threads();
   static void block_thread(int id);
+  static void init_timer();
+  static void reset_timer();
+  static int get_quantum_count();
 };
 
 #endif //_THREADHANDLER_H_

@@ -4,6 +4,13 @@
 #include "ThreadHandler.h"
 #include "Thread.h"
 
+
+void print_system_error_message(std::string str)
+{
+    std::cerr << "system error: " << str << std::endl;
+}
+
+
 void remove_element_from_queue(std::queue<int>& q, const int& value) {
     std::queue<int> temp_queue;
 
@@ -16,6 +23,27 @@ void remove_element_from_queue(std::queue<int>& q, const int& value) {
     }
 
     q = std::move(temp_queue);
+}
+
+
+void scheduler(int sig)
+{
+    Thread curr_thread_running = ThreadHandler::get_current_thread();
+    int curr_id  = ThreadHandler::get_current_thread_id();
+
+    if (curr_thread_running.get_status() != BLOCKED || curr_thread_running.get_status() != TERMINATED) // if quantum ended
+    {
+        curr_thread_running.set_status(READY);
+        ThreadHandler::add_thread_to_ready_queue(curr_id); //add thread to end of queue
+    }
+
+    ThreadHandler::set_first_ready_to_running(curr_id); //set current thread running (if false
+
+    thread_entry_point entry_point = ThreadHandler::get_current_thread().get_entry_point(); // running func
+    if (entry_point)
+    {
+        entry_point();
+    }
 }
 
 
@@ -68,7 +96,7 @@ const std::queue<int> &ThreadHandler::get_ready_states ()
 {
   return _ready_states;
 }
-const Thread &ThreadHandler::get_current_thread ()
+Thread &ThreadHandler::get_current_thread ()
 {
   return _threads.at(_current_thread_id);;
 }
@@ -95,6 +123,44 @@ void ThreadHandler::free_all_threads()
     {
         Thread t = _thread.second;
         t.free_thread();
+    }
+}
+
+
+void ThreadHandler::init_timer() {
+    struct sigaction sa = {0};
+
+    // Install timer_handler as the signal handler for SIGVTALRM.
+    sa.sa_handler = &scheduler;
+    if (sigaction(SIGVTALRM, &sa, NULL) < 0)
+    {
+        print_system_error_message("sigaction error.");
+    }
+
+    timer.it_value.tv_sec = 0;        // first time interval, seconds part
+    timer.it_value.tv_usec = _quantum_time;        // first time interval, microseconds part
+
+    timer.it_interval.tv_sec = 0;    // following time intervals, seconds part
+    timer.it_interval.tv_usec = _quantum_time;    // following time intervals, microseconds part
+
+    // Start a virtual timer. It counts down whenever this process is executing.
+    if (setitimer(ITIMER_VIRTUAL, &timer, NULL))
+    {
+        print_system_error_message("setitimer error.");
+    }
+}
+
+int ThreadHandler::get_quantum_count() {
+    return _quantum_count;
+}
+
+void ThreadHandler::reset_timer() {
+    timer.it_value.tv_sec = 0;        // first time interval, seconds part
+    timer.it_value.tv_usec = _quantum_time;        // first time interval, microseconds part
+
+    if (setitimer(ITIMER_VIRTUAL, &timer, NULL))
+    {
+        print_system_error_message("setitimer error.");
     }
 }
 
