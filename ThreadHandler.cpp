@@ -4,6 +4,20 @@
 #include "ThreadHandler.h"
 #include "Thread.h"
 
+void remove_element_from_queue(std::queue<int>& q, const int& value) {
+    std::queue<int> temp_queue;
+
+    while (!q.empty()) {
+        if (q.front() != value) {
+            temp_queue.push(q.front());
+        }
+
+        q.pop();
+    }
+
+    q = std::move(temp_queue);
+}
+
 
 ThreadHandler::ThreadHandler()
 {
@@ -41,6 +55,7 @@ void ThreadHandler::set_quantum_time (int quantum_time)
 }
 
 void ThreadHandler::delete_thread(int id) {
+    remove_element_from_queue(_ready_states, id);
     _threads.at(id).free_thread();
     _threads.erase(id);
 }
@@ -70,3 +85,5 @@ void ThreadHandler::free_all_threads()
         t.free_thread();
     }
 }
+
+
