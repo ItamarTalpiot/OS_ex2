@@ -2,6 +2,16 @@
 #include "ThreadHandler.h"
 #include <iostream>
 
+void print_library_error_message(std::string str)
+{
+    std::cerr << "thread library error: " << str << std::endl;
+}
+
+void print_system_error_message(std::string str)
+{
+    std::cerr << "system error: " << str << std::endl;
+}
+
 /**
  * @brief initializes the thread library.
  *
@@ -38,20 +48,26 @@ int uthread_init(int quantum_usecs)
 */
 int uthread_terminate(int tid)
 {
-    if (get)
+    if (tid == 0)
+    {
+        ThreadHandler::free_all_threads();
+        exit(0);
+    }
+    if (ThreadHandler::get_threads().find(tid) == ThreadHandler::get_threads().end())
+    {
+        print_library_error_message("Id to terminate doesn't exist");
+        return -1;
+    }
 
-    ThreadHandler::delete_thread(tid);
-
-}
-
-void print_library_error_message(std::string str)
-{
-    std::cerr << "thread library error: " << str << std::endl;
-}
-
-void print_system_error_message(std::string str)
-{
-    std::cerr << "system error: " << str << std::endl;
+    if (tid == ThreadHandler::get_current_thread_id())
+    {
+        ThreadHandler::delete_thread(tid);
+    }
+    else
+    {
+        ThreadHandler::delete_thread(tid);
+        return 0;
+    }
 }
 
 /**
