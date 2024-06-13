@@ -38,6 +38,9 @@ int uthread_init(int quantum_usecs)
 */
 int uthread_terminate(int tid)
 {
+    if (get)
+
+    ThreadHandler::delete_thread(tid);
 
 }
 

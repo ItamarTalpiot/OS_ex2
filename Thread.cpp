@@ -28,7 +28,8 @@ sigjmp_buf& Thread::get_buf_ref()
 
 void Thread::free_thread()
 {
-    free(stack);
+    if (stack)
+        free(stack);
 }
 
 void Thread::set_status(STATE s)

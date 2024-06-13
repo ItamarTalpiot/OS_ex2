@@ -41,6 +41,7 @@ void ThreadHandler::set_quantum_time (int quantum_time)
 }
 
 void ThreadHandler::delete_thread(int id) {
+    _threads.at(id).free_thread();
     _threads.erase(id);
 }
 
