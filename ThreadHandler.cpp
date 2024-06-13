@@ -79,7 +79,7 @@ int ThreadHandler::get_quantum_time ()
 
 void ThreadHandler::free_all_threads()
 {
-    for (auto t_it = myMap.begin(); t_it != myMap.end(); ++t_it)
+    for (auto t_it = _threads.begin(); t_it != _threads.end(); ++t_it)
     {
         Thread t = t_it->second;
         t.free_thread();
