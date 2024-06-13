@@ -51,3 +51,7 @@ STATE Thread::get_status() {
 thread_entry_point Thread::get_entry_point() {
     return _entry_point;
 }
+
+void Thread::inc_count() {
+    _quantum_time_spent_in_running++;
+}

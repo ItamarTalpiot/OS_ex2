@@ -37,6 +37,7 @@ public:
   static int get_quantum_count();
   static void add_thread_to_ready_queue(int id);
   static int set_first_ready_to_running(int id);
+  static void inc_global_quantum();
 };
 
 #endif //_THREADHANDLER_H_

@@ -68,6 +68,7 @@ public:
     Thread(int id, thread_entry_point entry_point);
     Thread(const Thread& other);
 
+    void inc_count();
     STATE get_status();
     void set_status(STATE s);
     sigjmp_buf& get_buf_ref();

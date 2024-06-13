@@ -39,6 +39,7 @@ void scheduler(int sig)
 
     ThreadHandler::set_first_ready_to_running(curr_id); //set current thread running (if false
 
+    ThreadHandler::get_current_thread().inc_count();
     thread_entry_point entry_point = ThreadHandler::get_current_thread().get_entry_point(); // running func
     if (entry_point)
     {
@@ -182,6 +183,10 @@ void ThreadHandler::reset_timer() {
     {
         print_system_error_message("setitimer error.");
     }
+}
+
+void ThreadHandler::inc_global_quantum() {
+    _quantum_count++;
 }
 
 
