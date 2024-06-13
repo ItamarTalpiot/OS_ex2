@@ -75,7 +75,7 @@ void ThreadHandler::add_thread (int id, thread_entry_point _entry_point)
 
 int ThreadHandler::get_number_of_threads ()
 {
-  return _threads.size();
+  return (int) _threads.size();
 }
 void ThreadHandler::set_quantum_time (int quantum_time)
 {
@@ -110,10 +110,11 @@ int ThreadHandler::get_current_thread_id ()
 }
 void ThreadHandler::block_thread (int id)
 {
-  //todo: if on ready so remove him from the queue.
+    remove_element_from_queue(_ready_states, id);
+
   _threads.at(id).set_status (BLOCKED);
   if(_current_thread_id == id){
-    //todo: do something if the thread blocked itself.
+    reset_timer();
   }
 }
 

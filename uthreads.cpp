@@ -58,7 +58,7 @@ int uthread_terminate(int tid)
     if (tid == ThreadHandler::get_current_thread_id())
     {
         ThreadHandler::delete_thread(tid);
-        // Todo: recall the schedular
+        ThreadHandler::reset_timer();
     }
     else
     {
