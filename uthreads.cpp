@@ -104,3 +104,31 @@ int uthread_spawn(thread_entry_point entry_point){
   ThreadHandler::add_thread (id, entry_point);
   return id;
 }
+
+/**
+ * @brief Blocks the thread with ID tid. The thread may be resumed later using uthread_resume.
+ *
+ * If no thread with ID tid exists it is considered as an error. In addition, it is an error to try blocking the
+ * main thread (tid == 0). If a thread blocks itself, a scheduling decision should be made. Blocking a thread in
+ * BLOCKED state has no effect and is not considered an error.
+ *
+ * @return On success, return 0. On failure, return -1.
+*/
+int uthread_block(int tid){
+  if (ThreadHandler::get_threads().find(tid) == ThreadHandler::get_threads().end() or tid == 0){
+    print_library_error_message ("there is no thread with that id!");
+    return -1;
+  }
+  ThreadHandler::block_thread (tid);
+  return 0;
+}
+
+/**
+ * @brief Resumes a blocked thread with ID tid and moves it to the READY state.
+ *
+ * Resuming a thread in a RUNNING or READY state has no effect and is not considered as an error. If no thread with
+ * ID tid exists it is considered an error.
+ *
+ * @return On success, return 0. On failure, return -1.
+*/
+int uthread_resume(int tid);

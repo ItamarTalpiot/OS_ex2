@@ -70,18 +70,30 @@ const std::queue<int> &ThreadHandler::get_ready_states ()
 }
 const Thread &ThreadHandler::get_current_thread ()
 {
-  return _current_thread;
+  return _threads.at(_current_thread_id);;
 }
 int ThreadHandler::get_quantum_time ()
 {
   return _quantum_time;
 }
+int ThreadHandler::get_current_thread_id ()
+{
+  return _current_thread_id;
+}
+void ThreadHandler::block_thread (int id)
+{
+  //todo: if on ready so remove him from the queue.
+  _threads.at(id).set_status (BLOCKED);
+  if(_current_thread_id == id){
+    //todo: do something if the thread blocked itself.
+  }
+}
 
 void ThreadHandler::free_all_threads()
 {
-    for (auto t_it = _threads.begin(); t_it != _threads.end(); ++t_it)
+    for (auto & _thread : _threads)
     {
-        Thread t = t_it->second;
+        Thread t = _thread.second;
         t.free_thread();
     }
 }

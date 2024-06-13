@@ -11,14 +11,15 @@ class ThreadHandler{
  private:
   static std::map<int, Thread> _threads;
   static std::queue<int> _ready_states;
-  static Thread _current_thread;
+  static int _current_thread_id;
   static int _quantum_time;
 
  public:
   ThreadHandler();
   static const std::map<int, Thread> &get_threads ();
   static const std::queue<int> &get_ready_states ();
-  static const Thread &get_current_thread ();
+  static const Thread& get_current_thread();
+  static  int get_current_thread_id();
   static int get_quantum_time ();
   static Thread& get_thread(int id);
   static Thread& pop_thread();
@@ -27,7 +28,7 @@ class ThreadHandler{
   static void set_quantum_time(int quantum_time);
   static void delete_thread(int id);
   static void free_all_threads();
-
+  static void block_thread(int id);
 };
 
 #endif //_THREADHANDLER_H_
