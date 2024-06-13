@@ -126,6 +126,25 @@ void ThreadHandler::free_all_threads()
     }
 }
 
+void ThreadHandler::add_thread_to_ready_queue (int id)
+{
+  _ready_states.push(id);
+}
+
+int ThreadHandler::set_first_ready_to_running (int id)
+{
+  if(_ready_states.empty()){
+    _current_thread_id = id;
+    _threads.at(id).set_status (RUNNING);
+    return -1;
+  }
+  int first_thread_id = _ready_states.front();
+  _ready_states.pop();
+  _threads.at(first_thread_id).set_status (RUNNING);
+  _current_thread_id = first_thread_id;
+  return 0;
+}
+
 
 void ThreadHandler::init_timer() {
     struct sigaction sa = {0};

@@ -5,6 +5,7 @@ Thread::Thread(int id, thread_entry_point entry_point)
     _id = id;
     _state = READY;
     _entry_point = entry_point;
+    _quantum_time_spent_in_running = 0;
     if (id != 0)
     {
         try {
@@ -36,6 +37,12 @@ void Thread::set_status(STATE s)
 {
     _state = s;
 }
+int Thread::get_quantum_time_spent_in_running ()
+{
+  return _quantum_time_spent_in_running;
+}
+
+
 
 STATE Thread::get_status() {
     return _state;

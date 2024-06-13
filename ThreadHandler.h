@@ -17,7 +17,7 @@ class ThreadHandler{
 
 
 public:
-    static struct itimerval timer;
+  static struct itimerval timer;
   ThreadHandler();
   static const std::map<int, Thread> &get_threads ();
   static const std::queue<int> &get_ready_states ();
@@ -35,6 +35,8 @@ public:
   static void init_timer();
   static void reset_timer();
   static int get_quantum_count();
+  static void add_thread_to_ready_queue(int id);
+  static int set_first_ready_to_running(int id);
 };
 
 #endif //_THREADHANDLER_H_
