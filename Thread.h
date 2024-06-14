@@ -65,6 +65,7 @@ class Thread {
     int _quantum_time_spent_in_running;
 
 public:
+    int _quanto_block_time;
     Thread(int id, thread_entry_point entry_point);
     Thread(const Thread& other);
 

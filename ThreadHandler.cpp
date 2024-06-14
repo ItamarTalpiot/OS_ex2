@@ -28,6 +28,20 @@ void remove_element_from_queue(std::queue<int>& q, const int& value) {
 
 void scheduler(int sig)
 {
+    for (auto thread_pair: ThreadHandler::get_threads())
+    {
+        Thread* blocked_thread = thread_pair.second;
+        if (blocked_thread->_quanto_block_time == 0)
+        {
+            blocked_thread.set_status(READY);
+            ThreadHandler::add_thread_to_ready_queue(thread_pair.first); //add thread to end of queue
+        }
+        if (blocked_thread.get_status() == BLOCKED)
+        {
+            blocked_thread._quanto_block_time--;
+        }
+    }
+
     Thread curr_thread_running = ThreadHandler::get_current_thread();
     int curr_id  = ThreadHandler::get_current_thread_id();
 

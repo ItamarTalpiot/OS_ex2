@@ -154,7 +154,21 @@ int uthread_resume(int tid){
  * @return On success, return 0. On failure, return -1.
 */
 int uthread_sleep(int num_quantums){
+    int curr_id = ThreadHandler::get_current_thread_id();
 
+    if (curr_id == 0)
+    {
+        print_library_error_message("main thread cannot be sleeped");
+        return -1;
+    }
+
+    Thread* curr_thread = ThreadHandler::get_current_thread();
+    curr_thread._quanto_block_time = num_quantums;
+    curr_thread->set_status(BLOCKED);
+
+    ThreadHandler::reset_timer();
+
+    return 0;
 }
 
 /**

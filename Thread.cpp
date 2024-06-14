@@ -6,6 +6,7 @@ Thread::Thread(int id, thread_entry_point entry_point)
     _state = READY;
     _entry_point = entry_point;
     _quantum_time_spent_in_running = 0;
+    _quanto_block_time = -1;
     if (id != 0)
     {
         try {
