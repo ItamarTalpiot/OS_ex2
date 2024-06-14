@@ -41,7 +41,8 @@ public:
   static void add_thread_to_ready_queue(int id);
   static int set_first_ready_to_running(int id);
   static void inc_global_quantum();
-};
+  static void printQueue(const std::queue<int>& q);
+  };
 
 #endif //_THREADHANDLER_H_
 

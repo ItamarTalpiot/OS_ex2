@@ -5,5 +5,6 @@ project(ex2)
 
 add_executable(ex2 ThreadHandler.cpp
         test0_sanity.cpp
+        uthreads.h
         uthreads.cpp
         Thread.cpp)

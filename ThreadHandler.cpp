@@ -61,6 +61,8 @@ void scheduler(int sig)
     ThreadHandler::set_first_ready_to_running(curr_id); //set current thread running (if false
 
     ThreadHandler::get_current_thread()->inc_count();
+    ThreadHandler::inc_global_quantum();
+
     thread_entry_point entry_point = ThreadHandler::get_current_thread()->get_entry_point(); // running func
     if (entry_point)
     {
@@ -152,7 +154,8 @@ void ThreadHandler::free_all_threads()
 
 void ThreadHandler::add_thread_to_ready_queue (int id)
 {
-  _ready_states.push(id);
+  _ready_states.push (id);
+  //printQueue (_ready_states);
 }
 
 int ThreadHandler::set_first_ready_to_running (int id)
@@ -209,6 +212,15 @@ void ThreadHandler::reset_timer() {
 
 void ThreadHandler::inc_global_quantum() {
     _quantum_count++;
+}
+void ThreadHandler::printQueue (const std::queue<int> &q)
+{
+  std::queue<int> temp = q; // Make a copy of the queue
+  while (!temp.empty()) {
+      std::cout << temp.front() << " ";
+      temp.pop();
+    }
+  std::cout << std::endl;
 }
 
 

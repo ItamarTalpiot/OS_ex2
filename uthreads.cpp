@@ -27,7 +27,9 @@ int uthread_init(int quantum_usecs)
 
     ThreadHandler::add_thread(0, nullptr);
     ThreadHandler::get_thread(0)->set_status(RUNNING);
+    ThreadHandler::get_ready_states().pop();
     ThreadHandler::set_quantum_time(quantum_usecs);
+    ThreadHandler::init_timer();
 
     return 0;
 }
