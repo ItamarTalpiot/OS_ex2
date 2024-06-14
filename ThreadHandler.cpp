@@ -4,6 +4,9 @@
 #include "ThreadHandler.h"
 #include "Thread.h"
 
+
+
+
 std::map<int, Thread*> ThreadHandler::_threads;
 std::queue<int> ThreadHandler::_ready_states;
 int ThreadHandler::_current_thread_id = 0;
@@ -30,6 +33,20 @@ void remove_element_from_queue(std::queue<int>& q, const int& value) {
     }
 
     q = std::move(temp_queue);
+}
+
+
+void setup_thread(int tid, char *stack, thread_entry_point entry_point, sigjmp_buf* env)
+{
+    // initializes env[tid] to use the right stack, and to run from the function 'entry_point', when we'll use
+    // siglongjmp to jump into the thread.
+
+    address_t sp = (address_t) stack + STACK_SIZE - sizeof(address_t);
+    address_t pc = (address_t) entry_point;
+    sigsetjmp(*env, 1);
+    ((*env)->__jmpbuf)[JB_SP] = translate_address(sp);
+    ((*env)->__jmpbuf)[JB_PC] = translate_address(pc);
+    sigemptyset(&(*env)->__saved_mask);
 }
 
 
@@ -89,9 +106,11 @@ Thread* ThreadHandler::pop_thread()
   return _threads.at(thread_id);
 }
 
-void ThreadHandler::add_thread (int id, thread_entry_point _entry_point)
+void ThreadHandler::add_thread (int id, thread_entry_point entry_point)
 {
-  _threads.insert({id, new Thread(id,_entry_point)});
+    Thread* new_thread = new Thread(id,entry_point);
+  _threads.insert({id, new_thread});
+    setup_thread(id, new_thread->stack, entry_point, new_thread->env);
   _ready_states.push (id);
 }
 
