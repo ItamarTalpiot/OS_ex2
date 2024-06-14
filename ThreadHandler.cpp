@@ -77,32 +77,28 @@ void remove_element_from_queue(std::queue<int>& q, const int& value) {
 }
 
 
-void setup_thread(int tid, char *stack, thread_entry_point entry_point, sigjmp_buf* env)
+void setup_thread(int tid, char *stack, thread_entry_point entry_point, sigjmp_buf env)
 {
     // initializes env[tid] to use the right stack, and to run from the function 'entry_point', when we'll use
     // siglongjmp to jump into the thread.
 
     address_t sp = (address_t) stack + STACK_SIZE - sizeof(address_t);
     address_t pc = (address_t) entry_point;
-    sigsetjmp(*env, 1);
-    ((*env)->__jmpbuf)[JB_SP] = translate_address(sp);
-    ((*env)->__jmpbuf)[JB_PC] = translate_address(pc);
-    sigemptyset(&(*env)->__saved_mask);
+    sigsetjmp(env, 1);
+    (env->__jmpbuf)[JB_SP] = translate_address(sp);
+    (env->__jmpbuf)[JB_PC] = translate_address(pc);
+    sigemptyset(&env->__saved_mask);
 }
 
 
 /**
  * @brief Saves the current thread state, and jumps to the other thread.
  */
-void yield(sigjmp_buf* last_env)
+void yield(Thread* last_thread, Thread* new_thread)
 {
-    int ret_val = sigsetjmp(*last_env, 1);
-//    printf ("yield: ret_val=%d\n", ret_val);
-    bool did_just_save_bookmark = ret_val == 0;
-//    bool did_jump_from_another_thread = ret_val != 0;
-    if (did_just_save_bookmark)
+    if (sigsetjmp(last_thread->env, 1) == 0)
     {
-        siglongjmp(*ThreadHandler::get_current_thread()->env, 1);
+        siglongjmp(new_thread->env, 1);
     }
 }
 
@@ -123,28 +119,26 @@ void scheduler(int sig)
     }
 
   int curr_id  = ThreadHandler::get_current_thread_id();
-  STATE thread_status = ThreadHandler::get_current_thread()->get_status();
+    Thread* last_thread = ThreadHandler::get_current_thread();
 
-
-    sigjmp_buf* last_env = nullptr;
-  if (thread_status != BLOCKED && thread_status != TERMINATED) // if quantum ended
+    if (last_thread != nullptr) // if not terminated
     {
-        ThreadHandler::get_current_thread()->set_status(READY);
-        ThreadHandler::add_thread_to_ready_queue(curr_id); //add thread to end of queue
-        last_env = ThreadHandler::get_current_thread()->env;
-    }
+        STATE thread_status = last_thread->get_status();
+        int last_id = ThreadHandler::get_current_thread_id();
 
+
+        if (thread_status != BLOCKED && thread_status != TERMINATED) // if quantum ended
+        {
+            ThreadHandler::get_current_thread()->set_status(READY);
+            ThreadHandler::add_thread_to_ready_queue(curr_id); //add thread to end of queue
+        }
+    }
     ThreadHandler::set_first_ready_to_running(curr_id); //set current thread running (if false
 
     ThreadHandler::get_current_thread()->inc_count();
     ThreadHandler::inc_global_quantum();
 
-    yield(last_env);
-//    thread_entry_point entry_point = ThreadHandler::get_current_thread()->get_entry_point(); // running func
-//    if (entry_point)
-//    {
-//        entry_point();
-//    }
+    yield(last_thread, ThreadHandler::get_current_thread());
 }
 
 
@@ -172,7 +166,9 @@ void ThreadHandler::add_thread (int id, thread_entry_point entry_point)
 {
     Thread* new_thread = new Thread(id,entry_point);
   _threads.insert({id, new_thread});
-    setup_thread(id, new_thread->stack, entry_point, new_thread->env);
+
+  setup_thread(id, new_thread->stack, entry_point, new_thread->env);
+
   _ready_states.push (id);
 }
 
@@ -188,6 +184,7 @@ void ThreadHandler::set_quantum_time (int quantum_time)
 void ThreadHandler::delete_thread(int id) {
     remove_element_from_queue(_ready_states, id);
     _threads.at(id)->free_thread();
+    delete(_threads.at(id));
     _threads.erase(id);
 }
 

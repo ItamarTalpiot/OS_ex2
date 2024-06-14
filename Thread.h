@@ -22,7 +22,7 @@ class Thread {
 public:
     int _quanto_block_time;
     char* stack;
-    sigjmp_buf* env;
+    sigjmp_buf env;
     Thread(int id, thread_entry_point entry_point);
     Thread(const Thread& other);
 
