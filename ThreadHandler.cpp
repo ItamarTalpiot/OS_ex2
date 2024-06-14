@@ -4,6 +4,13 @@
 #include "ThreadHandler.h"
 #include "Thread.h"
 
+std::map<int, Thread*> ThreadHandler::_threads;
+std::queue<int> ThreadHandler::_ready_states;
+int ThreadHandler::_current_thread_id = 0;
+int ThreadHandler::_quantum_time = 0;
+int ThreadHandler::_quantum_count = 0;
+struct itimerval ThreadHandler::timer = {};
+
 
 void print_system_error_message(std::string str)
 {
@@ -42,19 +49,19 @@ void scheduler(int sig)
         }
     }
 
-    Thread curr_thread_running = ThreadHandler::get_current_thread();
-    int curr_id  = ThreadHandler::get_current_thread_id();
+  int curr_id  = ThreadHandler::get_current_thread_id();
+  STATE thread_status = ThreadHandler::get_current_thread()->get_status();
 
-    if (curr_thread_running.get_status() != BLOCKED || curr_thread_running.get_status() != TERMINATED) // if quantum ended
+  if (thread_status != BLOCKED && thread_status != TERMINATED) // if quantum ended
     {
-        curr_thread_running.set_status(READY);
+        ThreadHandler::get_current_thread()->set_status(READY);
         ThreadHandler::add_thread_to_ready_queue(curr_id); //add thread to end of queue
     }
 
     ThreadHandler::set_first_ready_to_running(curr_id); //set current thread running (if false
 
-    ThreadHandler::get_current_thread().inc_count();
-    thread_entry_point entry_point = ThreadHandler::get_current_thread().get_entry_point(); // running func
+    ThreadHandler::get_current_thread()->inc_count();
+    thread_entry_point entry_point = ThreadHandler::get_current_thread()->get_entry_point(); // running func
     if (entry_point)
     {
         entry_point();
@@ -64,18 +71,18 @@ void scheduler(int sig)
 
 ThreadHandler::ThreadHandler()
 {
-  _threads.insert({0, Thread(0, nullptr)});
+  _threads.insert({0, new Thread(0, nullptr)});
 }
 
 
 
-Thread& ThreadHandler::get_thread (int id)
+Thread* ThreadHandler::get_thread (int id)
 {
   // this function gets thread id and return the thread with that id
   return _threads.at (id);
 }
 
-Thread& ThreadHandler::pop_thread()
+Thread* ThreadHandler::pop_thread()
 {
   int thread_id = _ready_states.front();
   _ready_states.pop();
@@ -84,7 +91,7 @@ Thread& ThreadHandler::pop_thread()
 
 void ThreadHandler::add_thread (int id, thread_entry_point _entry_point)
 {
-  _threads.insert({id, Thread(id,_entry_point)});
+  _threads.insert({id, new Thread(id,_entry_point)});
   _ready_states.push (id);
 }
 
@@ -99,19 +106,19 @@ void ThreadHandler::set_quantum_time (int quantum_time)
 
 void ThreadHandler::delete_thread(int id) {
     remove_element_from_queue(_ready_states, id);
-    _threads.at(id).free_thread();
+    _threads.at(id)->free_thread();
     _threads.erase(id);
 }
 
-const std::map<int, Thread> &ThreadHandler::get_threads ()
+std::map<int, Thread*> &ThreadHandler::get_threads ()
 {
   return _threads;
 }
-const std::queue<int> &ThreadHandler::get_ready_states ()
+std::queue<int> &ThreadHandler::get_ready_states ()
 {
   return _ready_states;
 }
-Thread &ThreadHandler::get_current_thread ()
+Thread *ThreadHandler::get_current_thread ()
 {
   return _threads.at(_current_thread_id);;
 }
@@ -125,9 +132,10 @@ int ThreadHandler::get_current_thread_id ()
 }
 void ThreadHandler::block_thread (int id)
 {
-    remove_element_from_queue(_ready_states, id);
+  remove_element_from_queue(_ready_states, id);
 
-  _threads.at(id).set_status (BLOCKED);
+  _threads.at(id)->set_status(BLOCKED);
+  _threads.at(id)->_quanto_block_time = -1;
   if(_current_thread_id == id){
     reset_timer();
   }
@@ -137,8 +145,8 @@ void ThreadHandler::free_all_threads()
 {
     for (auto & _thread : _threads)
     {
-        Thread t = _thread.second;
-        t.free_thread();
+        _thread.second->free_thread();
+        delete(_thread.second);
     }
 }
 
@@ -151,12 +159,12 @@ int ThreadHandler::set_first_ready_to_running (int id)
 {
   if(_ready_states.empty()){
     _current_thread_id = id;
-    _threads.at(id).set_status (RUNNING);
+    _threads.at(id)->set_status (RUNNING);
     return -1;
   }
   int first_thread_id = _ready_states.front();
   _ready_states.pop();
-  _threads.at(first_thread_id).set_status (RUNNING);
+  _threads.at(first_thread_id)->set_status (RUNNING);
   _current_thread_id = first_thread_id;
   return 0;
 }

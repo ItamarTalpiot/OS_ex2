@@ -26,7 +26,7 @@ int uthread_init(int quantum_usecs)
         return -1;
 
     ThreadHandler::add_thread(0, nullptr);
-    ThreadHandler::get_thread(0).set_status(RUNNING);
+    ThreadHandler::get_thread(0)->set_status(RUNNING);
     ThreadHandler::set_quantum_time(quantum_usecs);
 
     return 0;
@@ -132,12 +132,12 @@ int uthread_resume(int tid){
       print_library_error_message ("there is no thread with that id!");
       return -1;
   }
-  if(ThreadHandler::get_threads().at(tid).get_status() == RUNNING or
-  ThreadHandler::get_threads().at(tid).get_status() == READY){
+  if(ThreadHandler::get_threads().at(tid)->get_status() == RUNNING or
+  ThreadHandler::get_threads().at(tid)->get_status() == READY){
     return 0;
   }
   ThreadHandler::get_ready_states().push(tid);
-  ThreadHandler::get_threads().at(tid).set_status(BLOCKED);
+  ThreadHandler::get_threads().at(tid)->set_status(BLOCKED);
 }
 
 /**
@@ -202,5 +202,5 @@ int uthread_get_total_quantums(){
  * @return On success, return the number of quantums of the thread with ID tid. On failure, return -1.
 */
 int uthread_get_quantums(int tid){
-  return ThreadHandler::get_threads().at(tid).get_quantum_time_spent_in_running();
+  return ThreadHandler::get_threads().at(tid)->get_quantum_time_spent_in_running();
 }

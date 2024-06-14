@@ -6,10 +6,13 @@
 #define _THREADHANDLER_H_
 
 #include "Thread.h"
+#include <iostream>
+#include <map>
+#include <queue>
 
 class ThreadHandler{
  private:
-  static std::map<int, Thread> _threads;
+  static std::map<int, Thread*> _threads;
   static std::queue<int> _ready_states;
   static int _current_thread_id;
   static int _quantum_time;
@@ -19,13 +22,13 @@ class ThreadHandler{
 public:
   static struct itimerval timer;
   ThreadHandler();
-  static const std::map<int, Thread> &get_threads ();
-  static const std::queue<int> &get_ready_states ();
-  static Thread& get_current_thread();
+  static std::map<int, Thread*> &get_threads ();
+  static std::queue<int> &get_ready_states ();
+  static Thread* get_current_thread();
   static  int get_current_thread_id();
   static int get_quantum_time ();
-  static Thread& get_thread(int id);
-  static Thread& pop_thread();
+  static Thread* get_thread(int id);
+  static Thread* pop_thread();
   static int get_number_of_threads();
   static void add_thread(int id, thread_entry_point _entry_point);
   static void set_quantum_time(int quantum_time);
