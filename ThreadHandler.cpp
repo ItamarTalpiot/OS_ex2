@@ -201,7 +201,10 @@ std::queue<int> &ThreadHandler::get_ready_states ()
 }
 Thread *ThreadHandler::get_current_thread ()
 {
-  return _threads.at(_current_thread_id);;
+  if(_threads.find(_current_thread_id) == _threads.end()){
+    return nullptr;
+  }
+  return _threads.at(_current_thread_id);
 }
 int ThreadHandler::get_quantum_time ()
 {

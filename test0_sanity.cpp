@@ -1,5 +1,4 @@
 #include "uthreads.h"
-
 #include <iostream>
 
 void f (void)
@@ -18,7 +17,6 @@ void f (void)
 			}
 			i++;
 		}
-
 	}
 }
 
