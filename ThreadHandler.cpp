@@ -40,12 +40,12 @@ void scheduler(int sig)
         Thread* blocked_thread = thread_pair.second;
         if (blocked_thread->_quanto_block_time == 0)
         {
-            blocked_thread.set_status(READY);
+            blocked_thread->set_status(READY);
             ThreadHandler::add_thread_to_ready_queue(thread_pair.first); //add thread to end of queue
         }
-        if (blocked_thread.get_status() == BLOCKED and blocked_thread->_quanto_block_time > 0)
+        if (blocked_thread->get_status() == BLOCKED and blocked_thread->_quanto_block_time > 0)
         {
-            blocked_thread._quanto_block_time--;
+            blocked_thread->_quanto_block_time--;
         }
     }
 

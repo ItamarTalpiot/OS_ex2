@@ -163,7 +163,7 @@ int uthread_sleep(int num_quantums){
     }
 
     Thread* curr_thread = ThreadHandler::get_current_thread();
-    curr_thread._quanto_block_time = num_quantums;
+    curr_thread->_quanto_block_time = num_quantums;
     curr_thread->set_status(BLOCKED);
 
     ThreadHandler::reset_timer();
