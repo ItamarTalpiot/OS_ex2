@@ -91,6 +91,21 @@ void setup_thread(int tid, char *stack, thread_entry_point entry_point, sigjmp_b
 }
 
 
+/**
+ * @brief Saves the current thread state, and jumps to the other thread.
+ */
+void yield(sigjmp_buf* last_env)
+{
+    int ret_val = sigsetjmp(*last_env, 1);
+//    printf ("yield: ret_val=%d\n", ret_val);
+    bool did_just_save_bookmark = ret_val == 0;
+//    bool did_jump_from_another_thread = ret_val != 0;
+    if (did_just_save_bookmark)
+    {
+        siglongjmp(*ThreadHandler::get_current_thread()->env, 1);
+    }
+}
+
 void scheduler(int sig)
 {
     for (auto thread_pair: ThreadHandler::get_threads())
@@ -110,10 +125,13 @@ void scheduler(int sig)
   int curr_id  = ThreadHandler::get_current_thread_id();
   STATE thread_status = ThreadHandler::get_current_thread()->get_status();
 
+
+    sigjmp_buf* last_env = nullptr;
   if (thread_status != BLOCKED && thread_status != TERMINATED) // if quantum ended
     {
         ThreadHandler::get_current_thread()->set_status(READY);
         ThreadHandler::add_thread_to_ready_queue(curr_id); //add thread to end of queue
+        last_env = ThreadHandler::get_current_thread()->env;
     }
 
     ThreadHandler::set_first_ready_to_running(curr_id); //set current thread running (if false
@@ -121,11 +139,12 @@ void scheduler(int sig)
     ThreadHandler::get_current_thread()->inc_count();
     ThreadHandler::inc_global_quantum();
 
-    thread_entry_point entry_point = ThreadHandler::get_current_thread()->get_entry_point(); // running func
-    if (entry_point)
-    {
-        entry_point();
-    }
+    yield(last_env);
+//    thread_entry_point entry_point = ThreadHandler::get_current_thread()->get_entry_point(); // running func
+//    if (entry_point)
+//    {
+//        entry_point();
+//    }
 }
 
 
@@ -153,7 +172,7 @@ void ThreadHandler::add_thread (int id, thread_entry_point entry_point)
 {
     Thread* new_thread = new Thread(id,entry_point);
   _threads.insert({id, new_thread});
-//    setup_thread(id, new_thread->stack, entry_point, new_thread->env);
+    setup_thread(id, new_thread->stack, entry_point, new_thread->env);
   _ready_states.push (id);
 }
 
