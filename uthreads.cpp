@@ -27,7 +27,6 @@ int uthread_init(int quantum_usecs)
 
     ThreadHandler::add_thread(0, nullptr);
     ThreadHandler::get_thread(0)->set_status(RUNNING);
-    ThreadHandler::get_ready_states().pop();
     ThreadHandler::set_quantum_time(quantum_usecs);
     ThreadHandler::init_timer();
 
@@ -73,7 +72,6 @@ int uthread_terminate(int tid)
         ThreadHandler::block_sig();
         ThreadHandler::get_current_thread()->set_status(TERMINATED);
         ThreadHandler::delete_thread(tid);
-        ThreadHandler::init_timer();
         ThreadHandler::unblock_sig();
         return 0;
     }

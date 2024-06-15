@@ -132,7 +132,8 @@ void yield(Thread* last_thread, Thread* new_thread)
 
 void ThreadHandler::scheduler(int sig)
 {
-    printMap(_threads);
+//    printMap(_threads);
+//    printQueue(_ready_states);
 
     for (auto thread_pair: ThreadHandler::get_threads())
     {
@@ -265,6 +266,7 @@ void ThreadHandler::free_all_threads()
 
 void ThreadHandler::add_thread_to_ready_queue (int id)
 {
+//    std::cout <<"sadasdasd" << std::endl;
   _ready_states.push (id);
   //printQueue (_ready_states);
 }
