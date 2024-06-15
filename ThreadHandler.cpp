@@ -145,7 +145,7 @@ void ThreadHandler::scheduler(int sig)
         }
     }
 
-  int curr_id  = ThreadHandler::get_current_thread_id();
+    int curr_id  = ThreadHandler::get_current_thread_id();
     Thread* last_thread = ThreadHandler::get_current_thread();
 
     if (curr_id == 1)
@@ -290,17 +290,17 @@ void ThreadHandler::init_timer() {
 
     // Install timer_handler as the signal handler for SIGVTALRM.
     sa.sa_handler = &scheduler;
-    sigemptyset(&sa.sa_mask);
+//    sigemptyset(&sa.sa_mask);
     if (sigaction(SIGVTALRM, &sa, NULL) < 0)
     {
         print_system_error_message("sigaction error.");
     }
 
-    timer.it_value.tv_sec = 0;        // first time interval, seconds part
-    timer.it_value.tv_usec = _quantum_time;        // first time interval, microseconds part
+    timer.it_value.tv_sec = (int) (_quantum_time / 1000000);        // first time interval, seconds part
+    timer.it_value.tv_usec = _quantum_time % 1000000;        // first time interval, microseconds part
 
-    timer.it_interval.tv_sec = 0;    // following time intervals, seconds part
-    timer.it_interval.tv_usec = _quantum_time;    // following time intervals, microseconds part
+    timer.it_interval.tv_sec = (int) (_quantum_time / 1000000);    // following time intervals, seconds part
+    timer.it_interval.tv_usec = _quantum_time % 1000000;    // following time intervals, microseconds part
 
     // Start a virtual timer. It counts down whenever this process is executing.
     if (setitimer(ITIMER_VIRTUAL, &timer, NULL))
@@ -314,8 +314,8 @@ int ThreadHandler::get_quantum_count() {
 }
 
 void ThreadHandler::reset_timer() {
-    timer.it_value.tv_sec = 0;        // first time interval, seconds part
-    timer.it_value.tv_usec = _quantum_time;        // first time interval, microseconds part
+    timer.it_interval.tv_sec = (int) (_quantum_time / 1000000);    // following time intervals, seconds part
+    timer.it_interval.tv_usec = _quantum_time % 1000000;    // following time intervals, microseconds part
 
     if (setitimer(ITIMER_VIRTUAL, &timer, NULL))
     {
