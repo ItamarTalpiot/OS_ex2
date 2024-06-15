@@ -65,16 +65,16 @@ int uthread_terminate(int tid)
         ThreadHandler::get_current_thread()->set_status(TERMINATED);
         ThreadHandler::delete_thread(tid);
         ThreadHandler::scheduler(SIGVTALRM);
-        ThreadHandler::unblock_sig();
         ThreadHandler::reset_timer();
+        ThreadHandler::unblock_sig();
     }
     else
     {
         ThreadHandler::block_sig();
         ThreadHandler::get_current_thread()->set_status(TERMINATED);
         ThreadHandler::delete_thread(tid);
-        ThreadHandler::unblock_sig();
         ThreadHandler::init_timer();
+        ThreadHandler::unblock_sig();
         return 0;
     }
 }
@@ -127,7 +127,9 @@ int uthread_block(int tid){
     print_library_error_message ("there is no thread with that id!");
     return -1;
   }
+  ThreadHandler::block_sig();
   ThreadHandler::block_thread (tid);
+  ThreadHandler::unblock_sig();
   return 0;
 }
 
@@ -148,9 +150,10 @@ int uthread_resume(int tid){
   ThreadHandler::get_threads().at(tid)->get_status() == READY){
     return 0;
   }
+  ThreadHandler::block_sig();
   ThreadHandler::get_ready_states().push(tid);
   ThreadHandler::get_threads().at(tid)->set_status(READY);
-
+    ThreadHandler::unblock_sig();
   return 0;
 }
 
@@ -181,8 +184,8 @@ int uthread_sleep(int num_quantums){
     curr_thread->set_status(BLOCKED);
 
     ThreadHandler::scheduler(SIGVTALRM);
-    ThreadHandler::unblock_sig();
     ThreadHandler::reset_timer();
+    ThreadHandler::unblock_sig();
 
     return 0;
 }
