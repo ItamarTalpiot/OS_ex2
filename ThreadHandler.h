@@ -37,6 +37,7 @@ public:
   static void block_thread(int id);
   static void init_timer();
   static void block_sig();
+  static void unblock_sig();
   static void reset_timer();
   static void scheduler(int sig);
   static int get_quantum_count();

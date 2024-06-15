@@ -56,18 +56,23 @@ int ThreadHandler::_quantum_count = 0;
 struct itimerval ThreadHandler::timer = {};
 
 
-void catch_int(int sigNum)
-{
-        // nothing
+// Function to block SIGVTALRM
+void ThreadHandler::block_sig() {
+    sigset_t sigset;
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGVTALRM);
+    if (sigprocmask(SIG_BLOCK, &sigset, NULL) < 0) {
+        perror("sigprocmask error");
+    }
 }
 
-
-void ThreadHandler::block_sig() {
-    struct sigaction sa;
-    sa.sa_handler = &catch_int;
-    if (sigaction(SIG_BLOCK, &sa, NULL) < 0)
-    {
-        printf("sigaction error.");
+// Function to unblock SIGVTALRM
+void ThreadHandler::unblock_sig() {
+    sigset_t sigset;
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGVTALRM);
+    if (sigprocmask(SIG_UNBLOCK, &sigset, NULL) < 0) {
+        perror("sigprocmask error");
     }
 }
 
@@ -207,7 +212,6 @@ void ThreadHandler::set_quantum_time (int quantum_time)
 }
 
 void ThreadHandler::delete_thread(int id) {
-    printQueue(_ready_states);
     remove_element_from_queue(_ready_states, id);
     if (_threads.count(_current_thread_id) != 0)
     {
@@ -286,6 +290,7 @@ void ThreadHandler::init_timer() {
 
     // Install timer_handler as the signal handler for SIGVTALRM.
     sa.sa_handler = &scheduler;
+    sigemptyset(&sa.sa_mask);
     if (sigaction(SIGVTALRM, &sa, NULL) < 0)
     {
         print_system_error_message("sigaction error.");

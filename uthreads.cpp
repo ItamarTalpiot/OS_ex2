@@ -63,12 +63,11 @@ int uthread_terminate(int tid)
         ThreadHandler::get_current_thread()->set_status(TERMINATED);
         ThreadHandler::delete_thread(tid);
         ThreadHandler::scheduler(SIGVTALRM);
-        ThreadHandler::init_timer();
-//        ThreadHandler::reset_timer();
+        ThreadHandler::unblock_sig();
+        ThreadHandler::reset_timer();
     }
     else
     {
-        std::cout << "sdadasdas";
         ThreadHandler::block_sig();
         ThreadHandler::get_current_thread()->set_status(TERMINATED);
         ThreadHandler::delete_thread(tid);
