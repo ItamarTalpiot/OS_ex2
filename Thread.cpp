@@ -28,7 +28,7 @@ Thread::Thread(int id, thread_entry_point entry_point)
 void Thread::free_thread()
 {
     if (stack)
-        free(stack);
+        delete[] stack;
 }
 
 void Thread::set_status(STATE s)

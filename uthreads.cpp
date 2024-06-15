@@ -48,7 +48,9 @@ int uthread_terminate(int tid)
 {
     if (tid == 0)
     {
+        ThreadHandler::block_sig();
         ThreadHandler::free_all_threads();
+        ThreadHandler::unblock_sig();
         exit(0);
     }
     if (ThreadHandler::get_threads().find(tid) == ThreadHandler::get_threads().end())
@@ -121,7 +123,7 @@ int uthread_spawn(thread_entry_point entry_point){
  * @return On success, return 0. On failure, return -1.
 */
 int uthread_block(int tid){
-  if (ThreadHandler::get_threads().find(tid) == ThreadHandler::get_threads().end() or tid == 0){
+  if (ThreadHandler::get_threads().find(tid) == ThreadHandler::get_threads().end() || tid == 0){
     print_library_error_message ("there is no thread with that id!");
     return -1;
   }

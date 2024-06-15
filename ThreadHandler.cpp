@@ -259,7 +259,10 @@ void ThreadHandler::free_all_threads()
 {
     for (auto & _thread : _threads)
     {
-        _thread.second->free_thread();
+        if (_thread.first != 0)
+        {
+            _thread.second->free_thread();
+        }
         delete(_thread.second);
     }
 }
