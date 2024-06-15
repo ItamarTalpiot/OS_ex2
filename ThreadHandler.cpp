@@ -273,6 +273,10 @@ void ThreadHandler::add_thread_to_ready_queue (int id)
 int ThreadHandler::set_first_ready_to_running (int id)
 {
   if(_ready_states.empty()){
+      if (_threads.count(id) == 0)
+      {
+          id = 0;
+      }
     _current_thread_id = id;
     _threads.at(id)->set_status (RUNNING);
     return -1;

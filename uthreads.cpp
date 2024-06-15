@@ -71,6 +71,7 @@ int uthread_terminate(int tid)
         ThreadHandler::block_sig();
         ThreadHandler::get_current_thread()->set_status(TERMINATED);
         ThreadHandler::delete_thread(tid);
+        ThreadHandler::unblock_sig();
         ThreadHandler::init_timer();
         return 0;
     }
@@ -170,11 +171,13 @@ int uthread_sleep(int num_quantums){
         print_library_error_message("main thread cannot be sleeped");
         return -1;
     }
-
+    ThreadHandler::block_sig();
     Thread* curr_thread = ThreadHandler::get_current_thread();
     curr_thread->_quanto_block_time = num_quantums;
     curr_thread->set_status(BLOCKED);
 
+    ThreadHandler::scheduler(SIGVTALRM);
+    ThreadHandler::unblock_sig();
     ThreadHandler::reset_timer();
 
     return 0;

@@ -162,14 +162,14 @@ int main(){
     test_timer();
     test_spawn();
     test_spawn_thread_gets_minimal_tid();
-//    test_spawn_too_many();
-//    test_block();
-//    test_resume();
-//    test_sleep();
-//    test_block_sleeping_thread();
-//    test_send_main_thread_to_sleep();
-//    cout << "There should be 2 library error messages" << endl;
-//    uthread_terminate(0);
+    test_spawn_too_many();
+    test_block(); //passed
+    test_resume(); //passed
+    test_sleep(); //passed
+    test_block_sleeping_thread();
+    test_send_main_thread_to_sleep();
+    cout << "There should be 2 library error messages" << endl;
+    uthread_terminate(0);
 }
 
 
