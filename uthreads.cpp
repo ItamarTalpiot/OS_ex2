@@ -71,7 +71,7 @@ int uthread_terminate(int tid)
     else
     {
         ThreadHandler::block_sig();
-        ThreadHandler::get_current_thread()->set_status(TERMINATED);
+        ThreadHandler::get_thread(tid)->set_status(TERMINATED);
         ThreadHandler::delete_thread(tid);
         ThreadHandler::unblock_sig();
         return 0;
