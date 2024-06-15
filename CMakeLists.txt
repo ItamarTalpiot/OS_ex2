@@ -4,7 +4,7 @@ project(ex2)
 #set(CMAKE_C_STANDARD 99)
 
 add_executable(ex2 ThreadHandler.cpp
-        jona1.cpp
+        test3.in.cpp
         uthreads.h
         uthreads.cpp
         Thread.cpp)

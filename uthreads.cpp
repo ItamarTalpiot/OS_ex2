@@ -23,7 +23,10 @@ void print_library_error_message(std::string str)
 int uthread_init(int quantum_usecs)
 {
     if (quantum_usecs <= 0)
+    {
+        print_library_error_message("quantum needs to be positive");
         return -1;
+    }
 
     ThreadHandler::add_thread(0, nullptr);
     ThreadHandler::get_thread(0)->set_status(RUNNING);
@@ -220,5 +223,12 @@ int uthread_get_total_quantums(){
  * @return On success, return the number of quantums of the thread with ID tid. On failure, return -1.
 */
 int uthread_get_quantums(int tid){
-  return ThreadHandler::get_threads().at(tid)->get_quantum_time_spent_in_running();
+    if (ThreadHandler::get_threads().count(tid) > 0)
+        return ThreadHandler::get_threads().at(tid)->get_quantum_time_spent_in_running();
+    else
+    {
+        print_library_error_message("no thread with this id");
+        return -1;
+    }
+
 }
