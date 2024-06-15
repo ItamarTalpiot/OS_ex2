@@ -36,7 +36,9 @@ public:
   static void free_all_threads();
   static void block_thread(int id);
   static void init_timer();
+  static void block_sig();
   static void reset_timer();
+  static void scheduler(int sig);
   static int get_quantum_count();
   static void add_thread_to_ready_queue(int id);
   static int set_first_ready_to_running(int id);

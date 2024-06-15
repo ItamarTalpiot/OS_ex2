@@ -56,9 +56,31 @@ int ThreadHandler::_quantum_count = 0;
 struct itimerval ThreadHandler::timer = {};
 
 
+void catch_int(int sigNum)
+{
+        // nothing
+}
+
+
+void ThreadHandler::block_sig() {
+    struct sigaction sa;
+    sa.sa_handler = &catch_int;
+    if (sigaction(SIG_BLOCK, &sa, NULL) < 0)
+    {
+        printf("sigaction error.");
+    }
+}
+
+
 void print_system_error_message(std::string str)
 {
     std::cerr << "system error: " << str << std::endl;
+}
+
+void printMap(const std::map<int, Thread*>& myMap) {
+    for (const auto& pair : myMap) {
+        std::cout << pair.first << ": " << pair.second << std::endl;
+    }
 }
 
 
@@ -96,13 +118,13 @@ void setup_thread(int tid, char *stack, thread_entry_point entry_point, sigjmp_b
  */
 void yield(Thread* last_thread, Thread* new_thread)
 {
-    if (sigsetjmp(last_thread->env, 1) == 0)
+    if (last_thread == nullptr || sigsetjmp(last_thread->env, 1) == 0)
     {
         siglongjmp(new_thread->env, 1);
     }
 }
 
-void scheduler(int sig)
+void ThreadHandler::scheduler(int sig)
 {
     for (auto thread_pair: ThreadHandler::get_threads())
     {
@@ -121,11 +143,14 @@ void scheduler(int sig)
   int curr_id  = ThreadHandler::get_current_thread_id();
     Thread* last_thread = ThreadHandler::get_current_thread();
 
+    if (curr_id == 1)
+    {
+        ;
+    }
+
     if (last_thread != nullptr) // if not terminated
     {
         STATE thread_status = last_thread->get_status();
-        int last_id = ThreadHandler::get_current_thread_id();
-
 
         if (thread_status != BLOCKED && thread_status != TERMINATED) // if quantum ended
         {
@@ -182,10 +207,14 @@ void ThreadHandler::set_quantum_time (int quantum_time)
 }
 
 void ThreadHandler::delete_thread(int id) {
+    printQueue(_ready_states);
     remove_element_from_queue(_ready_states, id);
-    _threads.at(id)->free_thread();
-    delete(_threads.at(id));
-    _threads.erase(id);
+    if (_threads.count(_current_thread_id) != 0)
+    {
+        _threads.at(id)->free_thread();
+        delete _threads.at(id);
+        _threads.erase(id);
+    }
 }
 
 std::map<int, Thread*> &ThreadHandler::get_threads ()
@@ -198,7 +227,7 @@ std::queue<int> &ThreadHandler::get_ready_states ()
 }
 Thread *ThreadHandler::get_current_thread ()
 {
-  if(_threads.find(_current_thread_id) == _threads.end()){
+  if(_threads.count(_current_thread_id) == 0){
     return nullptr;
   }
   return _threads.at(_current_thread_id);
@@ -301,5 +330,7 @@ void ThreadHandler::printQueue (const std::queue<int> &q)
     }
   std::cout << std::endl;
 }
+
+
 
 
