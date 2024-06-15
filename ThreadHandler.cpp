@@ -84,8 +84,9 @@ void print_system_error_message(std::string str)
 
 void printMap(const std::map<int, Thread*>& myMap) {
     for (const auto& pair : myMap) {
-        std::cout << pair.first << ": " << pair.second << std::endl;
+        std::cout << pair.first << ", ";
     }
+    std::cout << std::endl << std::endl;
 }
 
 
@@ -131,6 +132,8 @@ void yield(Thread* last_thread, Thread* new_thread)
 
 void ThreadHandler::scheduler(int sig)
 {
+    printMap(_threads);
+
     for (auto thread_pair: ThreadHandler::get_threads())
     {
         Thread* blocked_thread = thread_pair.second;

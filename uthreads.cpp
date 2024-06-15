@@ -146,7 +146,7 @@ int uthread_resume(int tid){
       print_library_error_message ("there is no thread with that id!");
       return -1;
   }
-  if(ThreadHandler::get_threads().at(tid)->get_status() == RUNNING or
+  if(ThreadHandler::get_threads().at(tid)->get_status() == RUNNING ||
   ThreadHandler::get_threads().at(tid)->get_status() == READY){
     return 0;
   }
