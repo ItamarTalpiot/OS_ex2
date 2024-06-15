@@ -147,7 +147,9 @@ int uthread_resume(int tid){
     return 0;
   }
   ThreadHandler::get_ready_states().push(tid);
-  ThreadHandler::get_threads().at(tid)->set_status(BLOCKED);
+  ThreadHandler::get_threads().at(tid)->set_status(READY);
+
+  return 0;
 }
 
 /**
