@@ -148,11 +148,6 @@ void ThreadHandler::scheduler(int sig)
     int curr_id  = ThreadHandler::get_current_thread_id();
     Thread* last_thread = ThreadHandler::get_current_thread();
 
-    if (curr_id == 1)
-    {
-        ;
-    }
-
     if (last_thread != nullptr) // if not terminated
     {
         STATE thread_status = last_thread->get_status();
@@ -250,8 +245,9 @@ void ThreadHandler::block_thread (int id)
 
   _threads.at(id)->set_status(BLOCKED);
   _threads.at(id)->_quanto_block_time = -1;
-  if(_current_thread_id == id){
-    reset_timer();
+  if(_current_thread_id == id)
+  {
+    ThreadHandler::scheduler(SIGVTALRM);
   }
 }
 
@@ -259,10 +255,7 @@ void ThreadHandler::free_all_threads()
 {
     for (auto & _thread : _threads)
     {
-        if (_thread.first != 0)
-        {
-            _thread.second->free_thread();
-        }
+        _thread.second->free_thread();
         delete(_thread.second);
     }
 }

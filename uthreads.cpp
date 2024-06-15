@@ -153,7 +153,7 @@ int uthread_resume(int tid){
   ThreadHandler::block_sig();
   ThreadHandler::get_ready_states().push(tid);
   ThreadHandler::get_threads().at(tid)->set_status(READY);
-    ThreadHandler::unblock_sig();
+  ThreadHandler::unblock_sig();
   return 0;
 }
 
