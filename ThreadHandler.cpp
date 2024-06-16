@@ -134,7 +134,7 @@ void ThreadHandler::scheduler(int sig)
 {
 //    printMap(_threads);
 //    printQueue(_ready_states);
-
+    block_sig();
     for (auto thread_pair: ThreadHandler::get_threads())
     {
         Thread* blocked_thread = thread_pair.second;
@@ -166,7 +166,7 @@ void ThreadHandler::scheduler(int sig)
 
     ThreadHandler::get_current_thread()->inc_count();
     ThreadHandler::inc_global_quantum();
-
+    unblock_sig();
     yield(last_thread, ThreadHandler::get_current_thread());
 }
 
@@ -266,7 +266,6 @@ void ThreadHandler::free_all_threads()
 
 void ThreadHandler::add_thread_to_ready_queue (int id)
 {
-//    std::cout <<"sadasdasd" << std::endl;
   _ready_states.push (id);
   //printQueue (_ready_states);
 }

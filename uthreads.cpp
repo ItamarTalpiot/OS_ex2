@@ -32,6 +32,7 @@ int uthread_init(int quantum_usecs)
     ThreadHandler::get_thread(0)->set_status(RUNNING);
     ThreadHandler::get_ready_states().pop();
     ThreadHandler::set_quantum_time(quantum_usecs);
+    ThreadHandler::scheduler (SIGVTALRM);
     ThreadHandler::init_timer();
 
     return 0;
@@ -110,8 +111,10 @@ int uthread_spawn(thread_entry_point entry_point){
     print_library_error_message ("max number of thread reached!");
     return -1;
   }
+  ThreadHandler::block_sig();
   int id = get_next_id();
   ThreadHandler::add_thread (id, entry_point);
+  ThreadHandler::unblock_sig();
   return id;
 }
 
